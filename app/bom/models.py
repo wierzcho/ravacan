@@ -50,8 +50,12 @@ class Assembly(MP_Node):
         ret, lnk = [], {}
         pk_field = cls._meta.pk.attname
 
-        for pyobj in serializers.serialize('python', qset):
-            fields = pyobj['fields']
+        for assembly in qset:
+            assembly_obj = serializers.serialize('python', [assembly])
+            component = serializers.serialize('python', [assembly.component])
+            fields = assembly_obj[0]['fields']
+
+            fields['component'] = component[0]['fields']
             path = fields['path']
             depth = int(len(path) / cls.steplen)
             del fields['depth']
@@ -60,9 +64,9 @@ class Assembly(MP_Node):
             if pk_field in fields:
                 del fields[pk_field]
 
-            newobj = {f'data': fields}
+            newobj = {f'assembly': fields}
             if keep_ids:
-                newobj[pk_field] = pyobj['pk']
+                newobj[pk_field] = assembly_obj['pk']
 
             if (not parent and depth == 1) or \
                     (parent and len(path) == len(parent.path)):
