@@ -66,7 +66,7 @@ class Assembly(MP_Node):
 
             newobj = {f'assembly': fields}
             if keep_ids:
-                newobj[pk_field] = assembly_obj['pk']
+                newobj[pk_field] = assembly_obj[0]['pk']
 
             if (not parent and depth == 1) or \
                     (parent and len(path) == len(parent.path)):
